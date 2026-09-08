@@ -1,8 +1,160 @@
 # L1 Interference Pre-Edit Screening Prompt
-You are an English language editor screening a document for foreign language interference before detailed editing begins.
-**Author's native language: [SPECIFY: Zulu, Xhosa and Afrikaans]**
-Your task: Scan the entire text for unnatural English caused by the author's native language patterns. Flag interference by severity and provide a brief diagnostic summary to guide the full language edit.
-## Interference Categories
+
+## Job
+
+Screen a document for English phrasing shaped by the author's native
+language(s), before detailed editing begins. Scan the entire text, flag
+interference by category and severity, and produce a diagnostic summary that
+tells the full language edit where to focus.
+
+**Before scanning: if the author's native language(s) have not been stated for
+this run, ask which language(s) apply and wait for the answer.** This is the
+first thing to check, before reading the document for interference patterns —
+see *Guardrails → When to stop and ask* for how to handle multiple languages
+or a partial answer. Do not scan against a generic or assumed interference
+profile in the meantime.
+
+This runs as an early screening pass, ahead of the detailed language edit
+(LANG_EVAL / ESL Fluency & Register Audit). It identifies *where* and *what
+kind* of L1 interference is present so the later pass can prioritise; it does
+not itself perform the line-level correction that pass carries out.
+
+> **[Flagged for Frans]** The source prompt didn't state this pipeline
+> position — I've inferred "screening pass feeding LANG_EVAL" from how it
+> reads next to the ESL audit. Confirm or correct the sequencing.
+
+---
+
+## Why
+
+Interference from a first language is often grammatically defensible — it
+isn't wrong the way a typo is wrong, it's *foreign*, in ways a native reader
+notices as friction even when they can't immediately name what's off. A
+screening pass exists so that friction gets mapped before the detailed edit
+starts, rather than discovered piecemeal sentence by sentence.
+
+The risk this pass runs is the same one the ESL audit guards against, in a
+sharper form: a model told to hunt for "patterns caused by the author's native
+language" will find them everywhere, because almost any stylistic choice can
+be *attributed* to L1 influence in hindsight. Flagging phrasing that is
+already natural, idiomatic English — merely because it happens to differ from
+what the author might produce in their L1 — wastes the downstream editor's
+time and teaches them to distrust the flagged list. The value of this pass is
+in precision: a short, accurate diagnostic that the full edit can act on, not
+an exhaustive list of everything that could conceivably be interference.
+
+> **[Flagged for Frans]** As with the ESL audit's Why, this section is
+> inferred from the shape of the task rather than stated in the source
+> prompt. Confirm the framing, especially the emphasis on precision over
+> exhaustiveness — if you actually want maximal recall at this screening
+> stage (catch everything, let the full edit discard false positives), the
+> Guardrails below should be loosened accordingly.
+
+---
+
+## Guardrails
+
+### Preservation principle
+
+Flag only where a native English reader would notice friction or where the
+construction deviates from standard English usage. Do not flag:
+
+- Phrasing that is correct and natural, even if it happens to be a form the
+  author's L1 would also produce.
+- A stylistic choice that is merely *one of several* acceptable ways to say
+  something, with no interference-driven error underlying it.
+- Discipline-specific or deliberately consistent terminology — this pass
+  screens for interference, not for terminology or register choices, which
+  belong to the full language edit.
+
+> **[Flagged for Frans]** This principle is new — the source prompt had
+> nothing equivalent to the ESL audit's Golden Rule. Proposed here in the same
+> spirit; confirm the wording holds for interference screening specifically.
+
+### Severity bands
+
+Rate each flagged item against these bands:
+
+- **Critical** — actively obscures or changes meaning; a reader could
+  misunderstand the claim being made.
+- **High** — clearly non-native and would draw a reviewer's attention, but
+  meaning survives intact.
+- **Medium** — noticeable but minor; the kind of thing a careful native writer
+  would still sometimes produce under time pressure.
+- **Low** — a small register or naturalness preference; correct either way.
+
+> **[Flagged for Frans]** The source prompt used these four labels without
+> defining them — this is my proposed criterion set, drafted to be
+> distinguishable from each other and consistent with the "High"/"Low"
+> examples already in the prompt. Confirm, adjust, or replace before this
+> goes into service; the bands are load-bearing for the summary counts and
+> for the full edit's prioritisation.
+
+### Scope
+
+- This pass identifies and categorises; it does not rewrite the document or
+  produce final corrected text. The `Suggestion` column offers a plausible
+  fix for diagnostic clarity, not a ready-to-apply edit.
+- Categories are fixed to the eight listed in *Reference — Interference
+  categories*. Don't invent new categories; if a pattern doesn't fit any of
+  the eight, note it in the summary's dominant patterns rather than forcing
+  it into a table row.
+- Register and terminology correctness that isn't interference-driven is out
+  of scope for this pass — leave it for the full language edit.
+
+### When to stop and ask
+
+- **Author's native language(s) not specified — ask before doing anything
+  else.** This is the mandatory first step of every run (see Job). Different
+  native languages produce structurally different interference signatures —
+  a Nguni language (e.g. Zulu, Xhosa) and a Germanic one (e.g. Afrikaans) will
+  surface different patterns even in the same category — so scanning cannot
+  meaningfully begin without this answer. Ask directly (e.g. "Which native
+  language(s) should I screen this document against?") and wait; do not
+  infer the language from the text itself, and do not default to any
+  particular language.
+- **Multiple native languages given.** If more than one native language is
+  specified for a single document, ask whether to screen against each
+  independently (and note which language a given flag is attributed to) or
+  treat them as a combined profile, unless this is already made clear.
+- Proceed without asking on everything else — the interference categories,
+  the severity bands, and the output format are settled by this prompt.
+
+---
+
+## What done looks like
+
+A **Flagged Items** table using this format:
+
+| Location | Original Text | Category | Suggestion | Severity |
+|----------|---------------|----------|-----------|----------|
+| § Intro, para 2 | "a research" | Article | "Research" or "a study" | High |
+| § Methods | "utilize the method of" | Formality | "use the method" | Low |
+
+Followed by a **Summary**:
+
+- Counts by band: Critical: X | High: X | Medium: X | Low: X
+- **Dominant patterns:** the top two or three recurring interference types,
+  named specifically enough that the full edit can search for them
+- **Edit focus:** the specific sections or patterns the detailed language
+  edit should prioritise, given the above
+
+### Self-check before submitting
+
+1. Every flagged item cites a location precise enough to find in the source
+   document.
+2. No flagged item is phrasing that a native reader would read as natural and
+   correct (see Preservation principle).
+3. Every severity rating matches the band definitions above, not just
+   intuition.
+4. The summary's dominant patterns and edit focus are specific enough to act
+   on — not generic restatements of the category list.
+5. No category outside the fixed eight appears in the table.
+
+---
+
+## Reference — Interference categories
+
 - **Article misuse** (missing/wrong articles)
 - **Word order** (adjectives, objects, verbs in unnatural positions)
 - **Prepositions** (wrong preposition for English idiom)
@@ -11,13 +163,3 @@ Your task: Scan the entire text for unnatural English caused by the author's nat
 - **Subject-verb agreement** (plural/singular mismatches)
 - **Connectors & discourse** (overuse of formal conjunctions; weak linking)
 - **Formality** (over-formal register or unnecessary intensifiers)
-## Output Format
-**Flagged Items:**
-| Location | Original Text | Category | Suggestion | Severity |
-|----------|---------------|----------|-----------|----------|
-| § Intro, para 2 | "a research" | Article | "Research" or "a study" | High |
-| § Methods | "utilize the method of" | Formality | "use the method" | Low |
-**Summary:**
-- Critical: X | High: X | Medium: X | Low: X
-- **Dominant patterns:** [list top 2–3]
-- **Edit focus:** [specific sections or patterns to prioritize]
