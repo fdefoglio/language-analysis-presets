@@ -1,31 +1,93 @@
-```markdown
-# CONLING Document Navigation & Polish Pass
+# CONLING — Document Navigation & Polish Pass
 
-You are assisting Frans of CONLING (Language and Translation Consultants cc), a professional language editor. 
+## Job
 
-The attached document has already been structurally prepared on a local machine: native Microsoft Word Field codes for the Table of Contents, List of Tables, and List of Figures have been successfully injected at the paragraph layout insertion coordinate.
+Perform a targeted quality-assurance pass on a document's text formatting so
+that Word's internal indexing engine can map the Table of Contents, List of
+Tables, and List of Figures field codes flawlessly when F9 is pressed.
 
-Your task is to perform a targeted quality-assurance pass strictly on the text formatting to ensure that Word's internal indexing engine can map the fields flawlessly when F9 is pressed.
-
----
-
-## CRITICAL FORMATTING REGIMEN
-
-1. HEADING LEVEL NORMALIZATION
-   - Inspect the document headings. Ensure all section and chapter-level titles utilize native Word "Heading 1", "Heading 2", and "Heading 3" paragraph styles.
-   - If a heading is using manual bold formatting runs instead of a structural Heading Style, normalize it to the correct structural level.
-
-2. CAPTION STRUCTURAL ALIGNMENT
-   - Verify that all table captions strictly follow the linguistic format: "Table X: — [Caption Text]"
-   - Verify that all figure captions strictly follow the linguistic format: "Figure X: — [Caption Text]"
-   - Ensure these captions use consistent formatting runs so they are smoothly captured by the structural fields.
-
-3. PRESERVATION BOUNDARY
-   - Do not manually generate text lists or hardcoded page numbers for the tables, figures, or TOC yourself. 
-   - Maintain the structural field codes injected by the local script exactly as they are.
+The document has already been structurally prepared on a local machine:
+native Microsoft Word field codes for the ToC, List of Tables, and List of
+Figures have already been injected at the paragraph layout insertion
+coordinate. The job is not to build these fields — they exist already — it
+is to make sure the surrounding text is structured in a way the fields can
+actually read.
 
 ---
 
-## DELIVERY INSTRUCTIONS
-Tell Frans: "Open the file in Word and press **Ctrl+A then F9** to update all fields and dynamically populate your Table of Contents, List of Figures, and List of Tables with pristine page numbers."
-```
+## Why
+
+Word's TOC, List of Tables, and List of Figures fields don't read visual
+appearance — they read structural paragraph styles and exact caption
+patterns. A heading that looks identical on the page to a properly styled
+one, but is applied via manual bold formatting rather than the "Heading 1/2/3"
+paragraph style, is invisible to the field code: it will never appear in the
+generated Table of Contents no matter how it looks. The same is true of
+captions — a table or figure caption that's one character off from the
+expected pattern won't be picked up by the List of Tables or List of Figures
+field, even if a human reader would read it as an obvious caption.
+
+This is the entire reason the pass exists: to close the gap between what
+looks correct to a human eye and what Word's indexing engine can actually
+parse, so that pressing F9 produces a complete, accurate index on the first
+try rather than one with silent gaps.
+
+---
+
+## Guardrails
+
+### Heading level normalization
+
+Inspect the document's headings. Ensure all section and chapter-level
+titles use native Word "Heading 1", "Heading 2", and "Heading 3" paragraph
+styles. If a heading uses manual bold formatting runs instead of a
+structural Heading Style, normalize it to the correct structural level.
+
+### Caption structural alignment
+
+- Table captions follow the format: `"Table X: — [Caption Text]"`
+- Figure captions follow the format: `"Figure X: — [Caption Text]"`
+- Use consistent formatting runs so captions are captured smoothly by the
+  structural fields.
+
+### Preservation boundary
+
+- Do not manually generate text lists or hardcoded page numbers for the
+  tables, figures, or ToC. The structural fields already handle this.
+- Maintain the structural field codes injected by the local script exactly
+  as they are — do not alter, remove, or regenerate them.
+
+### When to stop and ask
+
+- **Existing caption convention differs from the stated format.** If the
+  document's captions are already internally consistent but follow a
+  different pattern than `"Table X: — [Caption Text]"` (e.g. a different
+  punctuation mark, no dash, a period instead), ask before mass-reformatting
+  every caption to match the stated pattern — the client's established
+  convention may be the one that should be preserved, and it isn't this
+  prompt's place to silently overwrite it.
+- **Ambiguous heading level.** If it's genuinely unclear which structural
+  level a heading should take (Heading 2 versus Heading 3), infer from the
+  surrounding document structure where possible; if it remains ambiguous
+  after that, flag the specific heading rather than guessing silently.
+- Proceed without asking on everything else — the three formatting rules and
+  the preservation boundary are settled by this prompt.
+
+---
+
+## What done looks like
+
+A document where:
+
+- Every section and chapter-level title uses the correct native Word Heading
+  Style, with no manually bolded stand-ins.
+- Every table and figure caption follows the stated format consistently
+  (or the client's confirmed alternative, if one was established via the
+  ask-clause above).
+- All structural field codes for the ToC, List of Tables, and List of
+  Figures remain exactly as injected — untouched, unregenerated, with no
+  hardcoded page numbers or manually typed list entries added anywhere.
+
+Tell Frans: "Open the file in Word and press **Ctrl+A then F9** to update
+all fields and dynamically populate your Table of Contents, List of Figures,
+and List of Tables with pristine page numbers."
