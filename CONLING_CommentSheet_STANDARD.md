@@ -14,9 +14,9 @@ Template: `CONLING_CommentSheet_TEMPLATE.tsv`. Every comment sheet uses exactly 
 | Column | Content |
 |---|---|
 | `""` (no name) | Running row number. |
-| `Position` | Where it is, in a form the reader can find in any version of the document: the section number plus a short verbatim quote, e.g. `§2.7.2, para 3: "…Dolatabad et al., 2022…"`. Several places are separated by ` \| `. Pages are used only when the document has no section numbers (e.g. reports: `p.11, §3.2, para 2`). |
+| `Position` | Where it is, in a form the reader can find: the section number plus a short verbatim quote, e.g. `§2.7.2, para 3: "…Dolatabad et al., 2022…"`. Several places are separated by ` \| `. In the version sent to the author, the page number comes first: `p. 54, §2.7.2, para 3: "…"`. For documents without section numbers (e.g. reports), use page and paragraph: `p.11, para 2`. |
 | `Issue` | `[CATEGORY] short label`, e.g. `[REF-MISSING] McKinney (2017)`. |
-| `Comment` | What the problem is and exactly what is needed from the reader, as a question or request. An internal paragraph label may be appended at the end as `[ref n]` for traceability. |
+| `Comment` | What the problem is and exactly what is needed from the reader, as a question or request. While editing, end with `[ref n]`: the paragraph label(s) of the working Markdown. |
 
 ## Two sheets per job
 
@@ -26,6 +26,12 @@ Template: `CONLING_CommentSheet_TEMPLATE.tsv`. Every comment sheet uses exactly 
 | `<Client>_CommentSheet_EDITOR.tsv` | The editor (internal) | Processing reminders, pipeline decisions, fixes within the editor's authority, items waiting on an author reply. **Never** sent to the author, and nothing from it is copied into the author sheet. |
 
 Anything the editor may fix freely is fixed, not queried. If a fix needs the author's approval or information, it goes in the AUTHOR sheet.
+
+## Paragraph labels and page numbers
+
+1. While editing, every row ends with `[ref n]`, the label of the paragraph in the current working Markdown (editor_tool export). If labels shift (re-export, structural changes), remap them.
+2. Labels stay until the edit is complete.
+3. At delivery, the AUTHOR sheet is converted: page numbers from a PDF of the final document exported from Word go into `Position`, and the `[ref n]` tags are removed. The EDITOR sheet keeps its labels.
 
 ## Issue categories
 
