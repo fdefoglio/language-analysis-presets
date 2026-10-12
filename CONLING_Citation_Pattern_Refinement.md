@@ -5,7 +5,7 @@ Attach both of these before running it:
   1. citation_patterns.csv
      Columns: citation | count | dominant_pattern | pattern_frequency |
      locations | suggestion
-  2. The manuscript, as full text with paragraph labels [1] through [336]
+  2. The manuscript, as full text with paragraph labels [13] through [1326]
      (so every [N] in the locations column can be found).
 
 If either is missing, the model should say so and wait. It should not work
@@ -144,7 +144,7 @@ Columns:
 
 ### Manuscript
 
-Full text with paragraph labels [1] through [336].
+Full text with paragraph labels [13] through [1326].
 
 ---
 
