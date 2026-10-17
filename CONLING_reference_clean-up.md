@@ -1,40 +1,59 @@
-# CONLING Reference Check (Agrekon, Range R)
+# CONLING Reference Check
 
 Model: Sonnet 5.5 (Extra). One chat for the whole range.
 
-## Job
-Check the reference list [120]–[183] of the Agrekon article (Gimo and Jordaan) against the body. Reference check only: no language edits, no changes to the reference format, no changes to body text.
+This prompt is client-agnostic. Everything specific to a client, project or range (range labels, file names, rules file, output format for fixes) comes from the chat call. Nothing in this prompt is adapted per client.
 
-Inputs (attached):
-- Revised Paper1 Gimo and Danie_v0_for_ai.md: the full current master, read-only context for matching reference entries to in-text citations
-- ref_audit_report.txt: the output of ref_audit.py. Verify each finding against the master before reporting it.
-- Agrekon_edit_instructions.md: the rules file
-- The AUTHOR sheet: check new questions against existing rows
+## Job
+Check a reference list against the body of the manuscript. Reference check only: no language edits, no changes to the reference format, no changes to body text, no changes to any [n] label.
+
+## Inputs
+The call names the inputs and the range. Typically:
+- The full current master, read-only, for matching reference entries to in-text citations.
+- An audit report from a reference-audit script, if the call attaches one. Verify each finding against the master before reporting it.
+- The project's rules file, if the call names one. Its rules take precedence over this prompt.
+- The AUTHOR sheet, if one exists. Check new questions against its existing rows.
+
+If the call does not name a range, ask for one before starting.
 
 ## Tasks
-1. Verify the audit report. For each finding, confirm it against the master and mark it "confirmed" or "not confirmed". Do not report an unconfirmed finding as a fault.
-2. Malformed italics: check [121], [134], [155] and [181]. Describe each one, so the XML fix is clear.
-3. Stray comma: check [179].
-4. Citation match: for each in-text citation in [0]–[119] that should have an entry in [120]–[183], confirm the entry exists. For each entry in [120]–[183], confirm at least one in-text citation points to it. Report any mismatch in either direction.
-5. Year suffixes: check that the year and any letter suffix (2016a, 2019b, and so on) in each in-text citation matches its entry.
-6. Duplicates: if two entries look like the same work, report the pair with both labels. Do not decide which to keep. Log it.
-7. Missing details: note any entry without a publisher, journal, volume or URL where the house format needs one. Do not supply it.
-
-## Why
-The reference list is a Word field structure, like a table of contents, so it cannot be fixed in the Markdown. Findings go to the EDITOR sheet with a note that the fix is made in the XML at hand-off. The body must match the list before the article goes back to the author.
+1. Verify the audit report, if attached. For each finding, confirm it against the master and mark it "confirmed" or "not confirmed". Do not report an unconfirmed finding as a fault.
+2. Check each in-text citation in the body against its reference entry: the entry exists, the surname form matches, and the year and any letter suffix match.
+3. Check each reference entry in the range: at least one in-text citation points to it. Report any mismatch in either direction.
+4. Check locators (page numbers) against the entry's page range where the entry gives one.
+5. Duplicates: if two entries look like the same work, report the pair with both labels. Do not decide which to keep.
+6. Malformed formatting in the entries: italics, stray characters, doubled punctuation, encoding damage. Describe each one so the fix is clear.
+7. Missing details: an entry that lacks a page range, article number, volume, publisher, journal, year or URL that the house format requires is an author item (see Output). Do not supply the detail.
+8. Source-dependent checks: a locator, surname form or page that can only be settled from the source is an author item. Name the entry and the locator.
+9. Inline tags: any "[author to verify]" or similar tag in the range is an author item, with the query stated.
+10. Editor-resolvable items: fixes the reference list itself settles, such as a year present in the entry but missing from the citation field, or stray characters. These stay with the editor.
 
 ## Guardrails
-- Check range [120]–[183] only. Labels [0]–[119] are read-only context.
+- Check the range named in the call only. Labels outside it are read-only context.
 - Never change, add or remove a [n] label.
-- Do not return a CSV. Do not propose changes to the reference list in the Markdown.
-- Do not create a reference entry from memory or by web search. If a citation has no entry, say so and log it. Do not write the entry.
+- Do not create a reference entry from memory or by web search. If a citation has no entry, say so and treat it as an author item (task 7).
 - Do not change titles, journal names or author names. They are third-party text.
-- Do not resolve a year mismatch by guessing. Report both values and the source of each.
-- Do not change the reference format. The house format is still open (handover section 9, item 4).
-- Do not repeat items already on the AUTHOR sheet, including the uncited references and the Cochran and Greenacre year queries.
-- No first person. No inline comments.
+- Do not resolve a year or page mismatch by guessing. Report both values and where each comes from.
+- Do not change the reference format unless the call says the house format is settled.
+- Do not repeat items already on the AUTHOR sheet.
+- No first person in any comment. No inline comments in the text.
+- Return a CSV only if the call asks for one. Otherwise return comments only.
+
+## Output
+Two blocks, each with four columns: "", Position, Issue, Comment. Each Comment ends with [ref n].
+
+**EDITOR block.** Category REF-CHECK for every item (tasks 2 to 6 and 10). Where the fix goes to the XML or Word file at hand-off, say so in the Comment ("fix in XML at hand-off").
+
+**AUTHOR block.** Categories:
+- REF-MISSING for tasks 7 and 3 where an entry is incomplete.
+- SOURCE-NEEDED for tasks 4 and 8.
+- ADMIN for tasks 9 and any inline tag that must be removed before the text is returned.
+Write each Comment for the authors, in plain language, stating what they need to supply or confirm.
+
+**Decisions list.** A short list, separate from both blocks, of anything that needs the editor's or the project lead's decision (for example a possible duplicate, or a house-format question). Do not place these on the AUTHOR sheet unless the decision is made.
 
 ## Done means
-1. Summary table: label | issue | status (confirmed / not confirmed) | in-text status (matched / unmatched / n/a).
-2. EDITOR sheet block, four columns: "", Position, Issue, Comment. Each Comment ends with [ref n] and the words "fix in XML at hand-off". Category REF-CHECK for every item.
-3. A short list of anything that needs Frans's decision, such as a possible duplicate or a house-format question. Do not add these to the AUTHOR sheet. Frans decides whether they go there.
+1. Summary table: label | issue | status (confirmed / not confirmed) | in-text status (matched / unmatched / n/a) | sheet (EDITOR / AUTHOR).
+2. EDITOR block.
+3. AUTHOR block.
+4. Decisions list.
