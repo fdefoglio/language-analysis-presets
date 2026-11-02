@@ -181,7 +181,6 @@ blank to defer to the project brief.*
 | `LANG-EVAL_report.md` | Narrative briefing — ranked issues, severity context, executive summary |
 | `LANG-EVAL_findings.csv` | Structured work order — use High-severity rows (F01 SVA, F02 sentence construction, F04 terminology, F08 L1 interference) as the primary target list for this pass |
 | `LANG-EVAL_metrics.json` | Baseline scores — use `grammar` axis score to calibrate intervention depth |
-| `scan_report.csv` | Mechanical findings — use THIS_VERB rows as additional locations for Trigger 6 |
 
 If all inputs are present, proceed. If any are missing, see *When to stop and
 ask*.
