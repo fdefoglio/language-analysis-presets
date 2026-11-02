@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "file_stem": "Student_Surname_DEDUP_proposal",
+    "export_name": "<exact file name of the editor_tool export>",
+    "rev": "rev1",
+    "date": "YYYY-MM-DD",
+    "memo_title": "DEDUP proposal for supervisor approval",
+    "memo_subtitle": "<Student full name>: <thesis title> (<degree>, <department/discipline>, <institution>)",
+    "memo_byline": "Prepared by CONLING Language and Translation Consultants · <D Month YYYY> · Status: proposal only; no change has been applied to the thesis"
+  },
+  "items": [
+    {
+      "num": 1,
+      "label": "<Short description of the duplication> (Sections <x.x> and <y.y>)",
+      "motivation": "<Two to four plain sentences: what repeats, where the full statement is kept, what each echo becomes. House style: no em dashes, no filler vocabulary.>",
+      "retained": "Section <x.x>, paragraph beginning “<first words>…” (unchanged).",
+      "sections": {
+        "456": "<section number of paragraph [456], e.g. 2.3.5>"
+      },
+      "changes": {
+        "456": "<The FULL proposed text of paragraph [456], without the [456] label. Must differ from the original. Keep every ⟦N|…⟧ token. Verify against the eight rewrite checks in CONLING_DEDUP_Proposal.md.>"
+      }
+    }
+  ]
+}
