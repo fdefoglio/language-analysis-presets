@@ -139,18 +139,18 @@ A CSV with these column headers exactly:
 
 Every field enclosed in double quotes, fields separated by commas.
 
-**Categories (use exactly these names):**
+### Categories (use exactly these names)
 
-- Unnatural phrasing (Trigger 1)
-- Register: colloquial (Trigger 2)
-- Register: jargon (Trigger 3)
-- Non-standard formulation (Trigger 4)
-- Weak academic opener (Trigger 5)
-- Grammatical error with stylistic impact (Trigger 6)
-- Factual or conceptual flag (Trigger 7)
-- First-person pronoun (Trigger 8)
+- **Unnatural phrasing** (Trigger 1)
+- **Register: colloquial** (Trigger 2)
+- **Register: jargon** (Trigger 3)
+- **Non-standard formulation** (Trigger 4)
+- **Weak academic opener** (Trigger 5)
+- **Grammatical error with stylistic impact** (Trigger 6)
+- **Factual or conceptual flag** (Trigger 7)
+- **First-person pronoun** (Trigger 8)
 
-**Severity:**
+## Severity
 
 - **Critical:** the sentence misstates a claim, or is unclear enough to mislead the reader.
 - **High:** a native reader would stop and re-read; a clear fluency or grammatical problem.
