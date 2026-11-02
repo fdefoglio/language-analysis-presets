@@ -5,7 +5,7 @@
 Audit an ESL-authored academic manuscript for phrasing that is grammatically
 defensible but unnatural, awkward, or register-inappropriate for a native
 English-speaking academic readership, and return each finding as a row in a
-four-column CSV.
+six-column CSV.
 
 This runs as **Pass 2** of the CONLING edit session and depends on the input
 files listed under *Reference — Required inputs*. Read the manuscript in full,
@@ -39,10 +39,7 @@ deliberate and the editor's synonym is often wrong; a solution that reads more
 smoothly while shifting the claim introduces an error the author never made
 and may not catch on review.
 
-> **[Flagged for Frans]** This section is drafted from the internal logic of
-> the source prompt — the Golden Rule, the `[author to verify]` convention,
-> and the near-synonym warnings all imply this rationale, but the source
-> prompt never states it. Confirm or replace before this goes into service.
+> **Confirmed by Frans, 3 Nov 2026:** this section stands as written.
 
 ---
 
@@ -59,12 +56,12 @@ Apply this rule strictly:
 - If the author's choice of word is non-standard but consistent and clearly
   intentional (discipline-specific terminology, regional academic English
   conventions), **do not flag it**.
-- Synonyms and paraphrases introduced in the `solution` column must preserve
+- Synonyms and paraphrases introduced in the `Suggestion` column must preserve
   the **exact semantic scope** of the original. In domain-specific writing,
   near-synonyms are not synonyms: *cattle* ≠ *livestock*; *beef* ≠ *meat*;
   *substitute* ≠ *complement*.
 - Where a finding involves domain-specific terminology whose correct value you
-  are uncertain of, mark the solution with **[author to verify]** rather than
+  are uncertain of, mark the suggestion with **[author to verify]** rather than
   imposing a correction.
 - The author's structural and argumentative choices are out of scope. Flag
   language; do not reorganise content.
@@ -82,6 +79,7 @@ passes:
 - Content duplication across sections → **DEDUP Audit**
 - Reference list formatting → **Reference Cleanup**
 - Spelling standardisation (British vs. American) → **Spellcheck Pass**
+- Sentence length and "This + verb" openers → **Prose Polish Audit**
 
 Issues belonging to the above categories go in the `## Out-of-Scope
 Observations` section after the CSV, never as CSV rows.
@@ -111,7 +109,7 @@ Ask before proceeding if any of the following is unresolved:
   possessives. Some journals and some disciplines now permit them. If the
   target journal's house style isn't supplied and the manuscript uses first
   person consistently rather than incidentally, ask before stripping it out.
-- **Two defensible solutions with no basis to choose.** Use `[editor
+- **Two defensible suggestions with no basis to choose.** Use `[editor
   discretion]` where both are genuinely acceptable and the choice is stylistic.
   Ask instead where the choice turns on something only the client or author
   knows.
@@ -127,39 +125,59 @@ need no confirmation.
 A CSV with these column headers exactly:
 
 ```
-"label","original","remark","solution"
+"Location","Original Text","Category","Severity","Suggestion","Remark"
 ```
 
 | Column | Content |
 |---|---|
-| `label` | Paragraph identifier, e.g. `[25]` |
-| `original` | The exact verbatim passage from the manuscript — as short as possible while retaining enough context to locate it unambiguously |
-| `remark` | One or two sentences explaining *why* the passage is problematic (trigger criterion met, what a native reader would find wrong) |
-| `solution` | The proposed replacement text. Use `[author to verify]` for factual flags. Use `[editor discretion]` where two valid solutions exist |
+| `Location` | Section and paragraph label, written `§x.y, [n]`, e.g. `§2.4.1, [512]`. The `[n]` label is the key. |
+| `Original Text` | The exact verbatim passage from the manuscript — as short as possible while retaining enough context to locate it unambiguously |
+| `Category` | One of the eight trigger categories listed below |
+| `Severity` | Critical, High, Medium or Low, as defined below |
+| `Suggestion` | The proposed replacement text. Use `[author to verify]` for factual flags. Use `[editor discretion]` where two valid suggestions exist |
+| `Remark` | One or two sentences explaining *why* the passage is problematic (trigger criterion met, what a native reader would find wrong) |
 
 Every field enclosed in double quotes, fields separated by commas.
+
+**Categories (use exactly these names):**
+
+- Unnatural phrasing (Trigger 1)
+- Register: colloquial (Trigger 2)
+- Register: jargon (Trigger 3)
+- Non-standard formulation (Trigger 4)
+- Weak academic opener (Trigger 5)
+- Grammatical error with stylistic impact (Trigger 6)
+- Factual or conceptual flag (Trigger 7)
+- First-person pronoun (Trigger 8)
+
+**Severity:**
+
+- **Critical:** the sentence misstates a claim, or is unclear enough to mislead the reader.
+- **High:** a native reader would stop and re-read; a clear fluency or grammatical problem.
+- **Medium:** register, jargon or formulaic phrasing that weakens the text but does not mislead.
+- **Low:** minor stylistic points. Recorded, but not counted in the summary.
 
 ### Output rules
 
 - One row per finding. Do not merge multiple issues into one row unless they
   are inseparable in the same short phrase.
-- Order findings by label, ascending.
+- Order findings by Location, ascending.
 - Do not include findings for passages already corrected in a prior editing
   pass, unless residual issues remain.
-- Do not output a row where `original` and `solution` are substantively the
-  same.
+- Do not output a row where `Original Text` and `Suggestion` are substantively
+  the same.
 - No preamble and no summary prose. The response consists of the CSV, followed
   — only if there is something to report — by a single `## Out-of-Scope
   Observations` section. Nothing else.
 
 ### Self-check before submitting
 
-1. Every row in `original` can be found verbatim in the manuscript.
-2. No row in `solution` introduces a meaning change, domain-term
+1. Every row in `Original Text` can be found verbatim in the manuscript at its Location.
+2. No row in `Suggestion` introduces a meaning change, domain-term
    substitution, or structural reorganisation.
 3. No row flags a passage that is grammatically correct, academically
    appropriate, and already clearly phrased.
-4. All factual flags carry `[author to verify]` in the solution.
+4. All factual flags carry `[author to verify]` in the suggestion.
 5. The CSV contains the header row and data rows only — no markdown fences,
    no explanatory text inside the CSV block.
 
@@ -168,7 +186,7 @@ Every field enclosed in double quotes, fields separated by commas.
 ## Reference — Session parameters
 
 **Target language variant: en-GB**
-*Applied to all lexical choices and spelling in the `solution` column. Leave
+*Applied to all lexical choices and spelling in the `Suggestion` column. Leave
 blank to defer to the project brief.*
 
 ---
