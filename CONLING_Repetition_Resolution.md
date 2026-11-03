@@ -52,15 +52,21 @@ useful to the editor as a fix, because it shows the item was judged rather than 
 
 ### Resolution strategy, in order of preference
 
-1. **Restructure** — if the sentence can be reworded so the word is needed only once, without
-   changing the claim, do that.
-2. **Synonym** — if restructuring would distort the meaning or need a larger rewrite, replace one
-   instance with a near-synonym that carries exactly the same meaning in this context.
-3. **Retain** — if the repeated word is a term of the field, part of a fixed phrase or name, needed
-   for precision, deliberately parallel, or if every alternative would shift the claim, keep it and
-   record RETAIN with the reason.
+1. **Eliminate** — if one instance can simply go (the second mention is redundant, a pronoun or the
+   sentence's own subject carries the reference, or the phrase can be dropped without losing
+   content), remove it. This is the preferred fix.
+2. **Restructure** — if eliminating would lose content, reword the sentence so the word is needed
+   only once, without changing the claim.
+3. **Synonym** — a fallback only, when neither of the above works. The synonym must carry exactly
+   the same meaning in this context: the same quantity, the same evaluation, the same certainty. If
+   no exact synonym exists, do not approximate: use RETAIN.
+4. **Retain** — if the repeated word is a term of the field, part of a fixed phrase or name, needed
+   for precision, deliberately parallel, or if every fix would shift the claim, keep it and record
+   RETAIN with the reason.
 
-If two strategies would both work, prefer the one that changes fewer words.
+Name the strategy you used (eliminate, restructure or synonym) in the Remark. A synonym fix is always
+for the editor to confirm, because meaning drift in a near-synonym is easy to miss: "higher" is not
+"improved", "contribution" is not "share", "variation" is not "differences".
 
 ### Keeping edits minimal
 
@@ -100,15 +106,16 @@ A findings table with one row per work-list item, columns:
 | `Category` | REPETITION or RETAIN. |
 | `Severity` | Medium if the repetition is noticeable on a normal reading; Low if it is mild. RETAIN rows are Low. |
 | `Suggestion` | For REPETITION, the replacement wording for `Original Text`. For RETAIN, empty. |
-| `Remark` | Starts with the work-list id(s), e.g. `W12:`; then the strategy used (restructure, synonym) or the reason for retaining, in a few words. |
+| `Remark` | Starts with the work-list id(s), e.g. `W12:`; then the strategy used (eliminate, restructure or synonym) or the reason for retaining, in a few words. |
 
 ### Self-check before submitting
 
 1. Every work-list item appears in exactly one row, named by its id at the start of the Remark.
 2. Every `Original Text` is verbatim in the paragraph its Location names.
 3. Every REPETITION keeps the meaning, the field terms, quotations and citations, and changes only what
-   the item needs.
-4. No row raises anything that is not on the work list.
+   the item needs; no word is added that changes the claim (therefore, must, clearly).
+4. Every synonym carries exactly the same meaning; where none does, the item is RETAIN.
+5. No row raises anything that is not on the work list.
 
 ---
 
@@ -128,7 +135,7 @@ A findings table with one row per work-list item, columns:
 ```csv
 "id","range","label","label_2","issue_type","stems","sentence_1","sentence_2"
 "W1","R02","88","","SAME_PARA_TWO_SENT","approach","The approach reduced handling time.","Because the approach needs no new equipment, it was adopted on all sites."
-"W2","R02","120","","SAME_PARA_TWO_SENT","collaboration","Collaboration among growers and processors is therefore essential.","Such collaboration would improve the scheduling of deliveries."
+"W2","R02","120","","SAME_PARA_TWO_SENT","grower","Most growers in the survey planted canola in rotation.","These growers also kept sheep on the stubble."
 "W3","R02","45","46","ADJACENT_PARA","interval","Samples were taken at weekly intervals.","The sampling interval was shortened in the second season."
 ```
 
@@ -136,7 +143,7 @@ A findings table with one row per work-list item, columns:
 
 ```csv
 "id","Location","Original Text","Category","Severity","Suggestion","Remark"
-"M1","§3.2, [88]","Because the approach needs no new equipment, it was adopted","REPETITION","Medium","Needing no new equipment, it was adopted","W1: restructure"
-"M2","§4.1, [120]","Such collaboration would improve","REPETITION","Medium","Working together would improve","W2: synonym; restructuring would lose the link to the previous sentence"
+"M1","§3.2, [88]","Because the approach needs no new equipment, it was adopted","REPETITION","Medium","Because it needs no new equipment, it was adopted","W1: eliminate (pronoun)"
+"M2","§4.1, [120]","These growers also kept","REPETITION","Medium","They also kept","W2: eliminate (pronoun carries the reference)"
 "M3","§3.1, [45]","intervals","RETAIN","Low","","W3: 'sampling interval' is the defined design parameter; varying it would blur the definition"
 ```
