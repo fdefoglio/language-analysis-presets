@@ -251,7 +251,3 @@ define_preset LANG_EVAL {
   };
 }
 ```
-
-run LANG_EVAL with { doc_path="2025.02.28.Article_Brazil_CAR (1).docx" }
-
-action=check_style_adherence; document="2025.02.28.Article_Brazil_CAR (1).docx"; styleguide="cb8081en.pdf"; execute=true
