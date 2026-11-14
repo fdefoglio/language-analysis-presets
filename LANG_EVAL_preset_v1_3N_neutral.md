@@ -6,6 +6,7 @@
 # - No MDPI/Harvard defaults baked in; rules/quality gates are conditional on detected style.
 # - Numeric vs author–date is inferred; enforcement matches the detected/selected style.
 # - Percent/numbering styles are AUTO; house styles can be passed via inputs when needed.
+# Revision 2026-11-14: APA7 author–date flavour added (CIT-AD-003, -005, -006); ${operator} defined in the quotation block.
 
 ```dsl
 define_preset LANG_EVAL {
@@ -30,7 +31,7 @@ define_preset LANG_EVAL {
     #  - numeric (ACS-like): [1], [2–4], [1,3]
     #  - author_date (Chicago/Harvard-like): (Author 2010) or (Author, 2010)
     citation_style_target="auto",                 # auto | author_date | numeric
-    author_date_flavour="auto",                   # auto | Harvard_comma | Chicago_no_comma
+    author_date_flavour="auto",                   # auto | Harvard_comma | Chicago_no_comma | APA7
 
     # Before/After workflow
     phase="pre",                                  # pre | post
@@ -89,6 +90,10 @@ define_preset LANG_EVAL {
     label_high="Standard language editing";
     label_low="Intermediate–Heavy language editing";
     embed_in_report=true;
+    # label and operator follow the score: score_percent >= threshold_percent -> label_high and "≥"; otherwise label_low and "<".
+    operator_high="≥";
+    operator_low="<";
+    operator=(score_percent >= threshold_percent) ? operator_high : operator_low;
     report_line_template="Quotation category: ${label} (${score_percent}% ${operator} ${threshold_percent}%)";
   };
 
@@ -123,14 +128,14 @@ define_preset LANG_EVAL {
       replace: "(\\1 \\2)",
       message: "Drop the comma between author and year for Chicago author–date."
     },
-    # Harvard normaliser (only if author_date_flavour selected/detected as Harvard comma)
+    # Harvard and APA 7 normaliser (comma between author and year)
     {
       id: "CIT-AD-003",
-      enabled: (author_date_detected && (author_date_flavour == "Harvard_comma")),
-      description: "Harvard author–date (comma).",
+      enabled: (author_date_detected && (author_date_flavour == "Harvard_comma" || author_date_flavour == "APA7")),
+      description: "Harvard or APA 7 author–date (comma).",
       pattern: "\\(([^()]+?)\\s+(\\d{4}[a-z]?)\\)",
       replace: "(\\1, \\2)",
-      message: "Insert a comma between author and year for Harvard author–date."
+      message: "Insert a comma between author and year (Harvard comma form, APA 7)."
     },
     # Multi-citation harmoniser inside parentheses (author–date)
     {
@@ -144,11 +149,24 @@ define_preset LANG_EVAL {
     # Page locator normaliser (author–date)
     {
       id: "CIT-AD-005",
-      enabled: author_date_detected,
+      enabled: (author_date_detected && (author_date_flavour != "APA7")),
       description: "Normalise page locators: '(Author Year, 45–47)'.",
       pattern: "\\(([^()]+?),\\s*(\\d{4}[a-z]?)\\s*[:|,]\\s*([\\d–\\-]+)\\)",
       replace: "(\\1 \\2, \\3)",
       message: "Move page range after the year, separated by comma."
+    },
+    # APA 7 author–date specifics (only if author_date_flavour selected/detected as APA7)
+    {
+      id: "CIT-AD-006",
+      enabled: (author_date_detected && (author_date_flavour == "APA7")),
+      description: "APA 7: '&' inside parentheses, 'and' in narrative citations; page locator as '(Author, Year, p. 45)' or 'pp. 45–47'.",
+      checks: [
+        "narrative citation with '&': Author & Author (Year) -> Author and Author (Year)",
+        "parenthetical citation with 'and': (Author and Author, Year) -> (Author & Author, Year)",
+        "page locator without p./pp.: (Author, Year, 45) -> (Author, Year, p. 45)",
+        "parenthetical citation used as a sentence subject -> narrative form"
+      ],
+      message: "Apply APA 7 author–date form: 'and' in narrative citations, '&' in parentheses, 'p.'/'pp.' before page numbers."
     }
     # No numeric-style enforcement rules here; numeric systems vary by journal.
   ];
